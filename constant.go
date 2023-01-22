@@ -22,7 +22,7 @@ const (
 	CreateCustomer         = "createCustomer"
 	Track_Event            = "trackEvent"
 	CustomerDetails        = "customerDetails"
-	CreateSubscription     = "createSubscription"
+	Create_Subscription    = "createSubscription"
 	CancelSubscription     = "cancelSubscription"
 	ChangeSubscription     = "changeSubscription"
 	SubscriptionDetails    = "subscriptionDetails"

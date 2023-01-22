@@ -60,7 +60,62 @@ type CustomerFeatureAccessResponse struct {
 	Access               bool      `json:"access,omitempty"`
 }
 
+type Integrations struct {
+	property1 any
+	property2 any
+}
+
+type DefaultCurrency struct {
+	code   string
+	name   string
+	symbol string
+}
+
+type ListCustomerResponse struct {
+	CustomerId       string               `json:"customer_id,omitempty"`
+	Email            string               `json:"email,omitempty"`
+	CustomerName     string               `json:"customer_name,omitempty"`
+	Invoices         []Invoice            `json:"invoices,omitempty"`
+	TotalAmountDue   int32                `json:"total_amount_due,omitempty"`
+	Subscriptions    []CreateSubscription `json:"subscriptions,omitempty"`
+	Integrations     Integrations         `json:"integrations,omitempty"`
+	DefaultCurrency  DefaultCurrency      `json:"default_currency,omitempty"`
+	HasPaymentMethod bool                 `json:"has_payment_method,omitempty"`
+	PaymentProvider  string               `json:"payment_provider,omitempty"`
+	Address          any                  `json:"address,omitempty"`
+	TaxRate          int16                `json:"tax_rate,omitempty"`
+}
+
 // SUBSCRIPTIONS
+
+type LightPlan struct {
+	plan_name string
+	plan_id   string
+	version   string
+}
+
+type LightCustomer struct {
+	customer_name string
+	email         string
+	customer_id   string
+}
+
+type CreateSubscription struct {
+	customer             LightCustomer
+	subscription_filters []SubscriptionFilter
+	start_date           string
+	end_date             string
+	fully_billed         bool
+	is_new               bool
+	auto_renew           bool
+	billing_plan         LightPlan
+}
+
+type SubscriptionFilter struct {
+	value         string
+	property_name string
+}
+
 type CreateSubscriptionParams struct {
 	CustomerId          string    `json:"customerId"`
 	PlanId              string    `json:"planId"`
@@ -137,6 +192,19 @@ type LineItems struct {
 	PlanVersionId       string    `json:"plan_version_id,omitempty"`
 	PlanName            string    `json:"plan_name,omitempty"`
 	SubscriptionFilters []Filters `json:"subscription_filters,omitempty"`
+}
+
+// INVOICE
+
+type Invoice struct {
+	external_payment_obj_type string
+	invoice_number            string
+	currency                  Currency
+	external_payment_obj_id   string
+	due_date                  time.Time
+	payment_status            string
+	issue_date                time.Time
+	cost_due                  int32
 }
 
 type GetInvoicesParams struct {
