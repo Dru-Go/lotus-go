@@ -2,9 +2,14 @@ package lotusgo
 
 import (
 	"net/http"
-	"reflect"
 	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
 )
+
+const TestURL_V1 = "https://api.uselotus.io/"
+const TestAPI_KEY = "ZtECIKzt.r2NGXzU8lqsghdqNABreakedpS5k3Ju1"
 
 func TestClient_ListCustomers(t *testing.T) {
 	type fields struct {
@@ -14,12 +19,22 @@ func TestClient_ListCustomers(t *testing.T) {
 		debug      bool
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		want    []ListCustomerResponse
-		wantErr bool
+		name   string
+		fields fields
+		want   []ListCustomerResponse
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Basic Test",
+			fields: fields{
+				BaseURL: TestURL_V1,
+				apiKey:  TestAPI_KEY,
+				HTTPClient: &http.Client{
+					Timeout: time.Minute,
+				},
+				debug: true,
+			},
+			want: []ListCustomerResponse{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -29,14 +44,9 @@ func TestClient_ListCustomers(t *testing.T) {
 				HTTPClient: tt.fields.HTTPClient,
 				debug:      tt.fields.debug,
 			}
-			got, err := client.ListCustomers()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Client.ListCustomers() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Client.ListCustomers() = %v, want %v", got, tt.want)
-			}
+			got, err := client.ListCustomersV2()
+			assert.Nil(t, err)
+			assert.NotNil(t, got)
 		})
 	}
 }

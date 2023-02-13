@@ -76,7 +76,7 @@ type ListCustomerResponse struct {
 	Email            string               `json:"email,omitempty"`
 	CustomerName     string               `json:"customer_name,omitempty"`
 	Invoices         []Invoice            `json:"invoices,omitempty"`
-	TotalAmountDue   int32                `json:"total_amount_due,omitempty"`
+	TotalAmountDue   float32              `json:"total_amount_due,omitempty"`
 	Subscriptions    []CreateSubscription `json:"subscriptions,omitempty"`
 	Integrations     Integrations         `json:"integrations,omitempty"`
 	DefaultCurrency  DefaultCurrency      `json:"default_currency,omitempty"`
