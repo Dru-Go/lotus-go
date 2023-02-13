@@ -2,14 +2,15 @@ package lotusgo
 
 import (
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-const TestURL_V1 = "https://api.uselotus.io/"
-const TestAPI_KEY = "ZtECIKzt.r2NGXzU8lqsghdqNABreakedpS5k3Ju1"
+var TestURL_V1 = os.Getenv("BaseURL_V1")
+var TestAPI_KEY = os.Getenv("API_KEY")
 
 func TestClient_ListCustomers(t *testing.T) {
 	type fields struct {

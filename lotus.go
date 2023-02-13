@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/lotus-go/lib"
@@ -13,7 +14,7 @@ import (
 
 // "github.com/lotus-go/lib"
 
-const BaseURL_V1 = "https://api.uselotus.io" // process env
+var BaseURL_V1 = os.Getenv("BaseURL_V1") // process env
 
 type Client struct {
 	BaseURL    string
