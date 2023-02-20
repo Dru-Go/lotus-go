@@ -3,10 +3,7 @@ package lotusgo
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/lotus-go/lib"
@@ -14,7 +11,7 @@ import (
 
 // "github.com/lotus-go/lib"
 
-var BaseURL_V1 = os.Getenv("BaseURL_V1") // process env
+var BaseURL_V1 = "https://api.uselotus.io" // process env
 
 type Client struct {
 	BaseURL    string
@@ -45,57 +42,58 @@ func NewClientWithTimeOut(apiKey string, timeOut time.Duration) *Client {
 	}
 }
 
-func (client *Client) ListCustomers() ([]ListCustomerResponse, error) {
-	// Request HTTP with timeout
-	req, _ := http.NewRequest("GET", BaseURL_V1+GET_CUSTOMERS, nil)
-	req.Header.Add("X-API-KEY", fmt.Sprint(client.apiKey))
+func (client *Client) ListCustomers() ([]CustomerResponse, error) {
+	endpoint := BaseURL_V1 + GET_CUSTOMERS
+	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: nil}
+	request.Header.Add("X-API-KEY", client.apiKey)
 
-	// Make the request to the API
-	resp, err := client.HTTPClient.Do(req)
+	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
 	if err != nil {
-		return []ListCustomerResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	// Read the response body
-	body, err2 := ioutil.ReadAll(resp.Body)
-	if err2 != nil {
-		panic(err.Error())
+		return []CustomerResponse{}, err
 	}
 
-	log.Printf("body = %v", string(body))
-
-	var response []ListCustomerResponse
-
-	// Unmarshal the JSON response into a slice of ListCustomerResponse
-	err3 := json.Unmarshal(body, &response)
-	if err3 != nil {
-		log.Printf("error = %v", err3)
-		return []ListCustomerResponse{}, err3
+	var response []CustomerResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return []CustomerResponse{}, err
 	}
-
-	log.Printf("s = %v", response)
 
 	return response, nil
 }
 
-func (client *Client) ListCustomersV2() ([]ListCustomerResponse, error) {
-	endpoint := BaseURL_V1 + GET_CUSTOMERS
-	cli := NewClient(client.apiKey)
+func (client *Client) GetCustomer(message CustomerDetailsParams) (CustomerResponse, error) {
+	endpoint := fmt.Sprint(BaseURL_V1, GET_CUSTOMERS, message.CustomerId)
 	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: nil}
-	request.Header.Add("X-API-KEY", fmt.Sprint(client.apiKey))
+	request.Header.Add("X-API-KEY", client.apiKey)
 
-	body, err := lib.SendHTTPRequest(*cli.HTTPClient, request)
+	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
 	if err != nil {
-		fmt.Println(err)
-		return []ListCustomerResponse{}, err
+		return CustomerResponse{}, err
 	}
 
-	var response []ListCustomerResponse
+	var response CustomerResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		fmt.Println(err)
-		return []ListCustomerResponse{}, err
+		return CustomerResponse{}, err
+	}
+
+	return response, nil
+}
+
+func (client *Client) CreateCustomer(message CreateCustomerParams) (CustomerResponse, error) {
+	endpoint := fmt.Sprint(BaseURL_V1, CREATE_CUSTOMERS)
+	request := lib.Request{Method: "POST", URL: endpoint, Header: http.Header{}, Payload: message}
+	request.Header.Add("X-API-KEY", client.apiKey)
+
+	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
+	if err != nil {
+		return CustomerResponse{}, err
+	}
+
+	var response CustomerResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return CustomerResponse{}, err
 	}
 
 	return response, nil

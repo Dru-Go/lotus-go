@@ -71,7 +71,7 @@ type DefaultCurrency struct {
 	symbol string
 }
 
-type ListCustomerResponse struct {
+type CustomerResponse struct {
 	CustomerId       string               `json:"customer_id,omitempty"`
 	Email            string               `json:"email,omitempty"`
 	CustomerName     string               `json:"customer_name,omitempty"`
