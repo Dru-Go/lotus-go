@@ -1,11 +1,11 @@
 package lotusgo
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,7 +51,6 @@ func TestClient_ListCustomers(t *testing.T) {
 			}
 			got, err := client.ListCustomers()
 			assert.Nil(t, err)
-			fmt.Printf("%+v\n", got)
 			assert.NotNil(t, got)
 		})
 	}
@@ -118,6 +117,7 @@ func TestClient_GetCustomer(t *testing.T) {
 }
 
 func TestClient_CreateCustomer(t *testing.T) {
+	customerId := uuid.NewString()
 	type args struct {
 		message CreateCustomerParams
 	}
@@ -131,8 +131,20 @@ func TestClient_CreateCustomer(t *testing.T) {
 		{
 			name:   "Basic Create Customer Test",
 			fields: mockClient,
-			args:   args{},
-			want:   CustomerResponse{},
+			args: args{
+				message: CreateCustomerParams{
+					CustomerId:   customerId,
+					Email:        "derraaadugna2@gmail.com",
+					CustomerName: "Dre3",
+				},
+			},
+			want: CustomerResponse{
+				CustomerId:    customerId,
+				Email:         "derraaadugna2@gmail.com",
+				CustomerName:  "Dre3",
+				Invoices:      []Invoice{},
+				Subscriptions: []CreateSubscription{},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -146,6 +158,7 @@ func TestClient_CreateCustomer(t *testing.T) {
 			got, err := client.CreateCustomer(tt.args.message)
 			assert.Nil(t, err)
 			assert.NotNil(t, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

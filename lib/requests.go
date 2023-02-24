@@ -1,11 +1,10 @@
 package lib
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // Request is a struct that holds the request data
@@ -13,24 +12,13 @@ type Request struct {
 	Method  string
 	URL     string
 	Header  http.Header
-	Payload interface{}
+	Payload string
 }
 
-// SendHTTPRequest sends an HTTP request
+// Request sends an HTTP request
 func SendHTTPRequest(client http.Client, request Request) ([]byte, error) {
-	// Marshal request payload
-	var requestBody []byte
-	if request.Payload != nil {
-		var err error
-		requestBody, err = json.Marshal(request.Payload)
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-	}
-
 	// Create HTTP request
-	httpRequest, err := http.NewRequest(request.Method, request.URL, bytes.NewBuffer(requestBody))
+	httpRequest, err := http.NewRequest(request.Method, request.URL, strings.NewReader(request.Payload))
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

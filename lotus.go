@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/go-querystring/query"
 	"github.com/lotus-go/lib"
 )
 
@@ -44,7 +45,7 @@ func NewClientWithTimeOut(apiKey string, timeOut time.Duration) *Client {
 
 func (client *Client) ListCustomers() ([]CustomerResponse, error) {
 	endpoint := BaseURL_V1 + GET_CUSTOMERS
-	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: nil}
+	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: ""}
 	request.Header.Add("X-API-KEY", client.apiKey)
 
 	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
@@ -63,7 +64,7 @@ func (client *Client) ListCustomers() ([]CustomerResponse, error) {
 
 func (client *Client) GetCustomer(message CustomerDetailsParams) (CustomerResponse, error) {
 	endpoint := fmt.Sprint(BaseURL_V1, GET_CUSTOMERS, message.CustomerId)
-	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: nil}
+	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: ""}
 	request.Header.Add("X-API-KEY", client.apiKey)
 
 	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
@@ -82,14 +83,18 @@ func (client *Client) GetCustomer(message CustomerDetailsParams) (CustomerRespon
 
 func (client *Client) CreateCustomer(message CreateCustomerParams) (CustomerResponse, error) {
 	endpoint := fmt.Sprint(BaseURL_V1, CREATE_CUSTOMERS)
-	request := lib.Request{Method: "POST", URL: endpoint, Header: http.Header{}, Payload: message}
+	formatted, err := query.Values(message)
+	if err != nil {
+		return CustomerResponse{}, err
+	}
+	request := lib.Request{Method: "POST", URL: endpoint, Header: http.Header{}, Payload: formatted.Encode()}
 	request.Header.Add("X-API-KEY", client.apiKey)
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
 	if err != nil {
 		return CustomerResponse{}, err
 	}
-
 	var response CustomerResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {

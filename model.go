@@ -13,8 +13,8 @@ type Filters struct {
 
 // CUSTOMERS
 type Customer struct {
-	Name             string `json:"customerName,omitempty"`
-	Id               string `json:"customerId,omitempty"`
+	Name             string `json:"customer_name,omitempty"`
+	Id               string `json:"customer_id,omitempty"`
 	Email            string `json:"email,omitempty"`
 	Payment_provider string `json:"payment_provider,omitempty"`
 	Properties       any    `json:"properties,omitempty"`
@@ -22,14 +22,14 @@ type Customer struct {
 }
 
 type CreateCustomerParams struct {
-	CustomerId          string `json:"customerId,omitempty"`
-	Email               string `json:"email,omitempty"`
-	PaymentProvider     string `json:"paymentProvider,omitempty"`
-	PaymentProviderId   string `json:"paymentProviderId,omitempty"`
-	CustomerName        string `json:"customerName,omitempty"`
-	Properties          string `json:"properties,omitempty"`
-	Integrations        string `json:"integrations,omitempty"`
-	DefaultCurrencyCode string `json:"default_currency_code,omitempty"`
+	CustomerId          string `json:"customer_id,omitempty" url:"customer_id"`
+	Email               string `json:"email,omitempty" url:"email"`
+	PaymentProvider     string `json:"payment_provider,omitempty" url:"payment_provider,omitempty"`
+	PaymentProviderId   string `json:"payment_provider_id,omitempty" url:"payment_provider_id,omitempty"`
+	CustomerName        string `json:"customer_name,omitempty" url:"customer_name"`
+	Properties          string `json:"properties,omitempty" url:"properties,omitempty"`
+	Integrations        string `json:"integrations,omitempty" url:"integrations,omitempty"`
+	DefaultCurrencyCode string `json:"default_currency_code,omitempty" url:"default_currency_code,omitempty"`
 }
 
 type CreateBatchCustomerParams struct {
