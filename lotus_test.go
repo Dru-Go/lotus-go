@@ -119,7 +119,7 @@ func TestClient_GetCustomer(t *testing.T) {
 func TestClient_CreateCustomer(t *testing.T) {
 	customerId := uuid.NewString()
 	type args struct {
-		message CreateCustomerParams
+		params CreateCustomerParams
 	}
 	tests := []struct {
 		name    string
@@ -132,7 +132,7 @@ func TestClient_CreateCustomer(t *testing.T) {
 			name:   "Basic Create Customer Test",
 			fields: mockClient,
 			args: args{
-				message: CreateCustomerParams{
+				params: CreateCustomerParams{
 					CustomerId:   customerId,
 					Email:        "derraaadugna2@gmail.com",
 					CustomerName: "Dre3",
@@ -155,7 +155,87 @@ func TestClient_CreateCustomer(t *testing.T) {
 				HTTPClient: tt.fields.HTTPClient,
 				debug:      tt.fields.debug,
 			}
-			got, err := client.CreateCustomer(tt.args.message)
+			got, err := client.CreateCustomer(tt.args.params)
+			assert.Nil(t, err)
+			assert.NotNil(t, got)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestClient_Ping(t *testing.T) {
+	tests := []struct {
+		name    string
+		fields  BasicClient
+		want    bool
+		wantErr bool
+	}{
+		{
+			name:   "Basic Ping Request",
+			fields: mockClient,
+			want:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := &Client{
+				BaseURL:    tt.fields.BaseURL,
+				apiKey:     tt.fields.apiKey,
+				HTTPClient: tt.fields.HTTPClient,
+				debug:      tt.fields.debug,
+			}
+			got, err := client.Ping()
+			assert.Nil(t, err)
+			assert.NotNil(t, got)
+			assert.NotNil(t, got.OrganizationId)
+		})
+	}
+}
+
+func TestClient_TrackEvent(t *testing.T) {
+	type args struct {
+		params TrackEventParams
+	}
+	tests := []struct {
+		name   string
+		fields BasicClient
+		args   args
+		want   TrackEventResponse
+	}{
+		{
+			name:   "TrackEvent Test",
+			fields: mockClient,
+			args: args{
+				params: TrackEventParams{
+					Batch: []TrackEventEntity{
+						{
+							CustomerId:  "cust_ddfae050b12c4c3a9e092917299296c4",
+							EventName:   "api_post",
+							ImpotencyId: time.Now().Format(time.RFC3339),
+							Properties: TrackEventProperty{
+								ShardId:   "2",
+								ShardType: "professional",
+								Change:    int32(4),
+							},
+							TimeCreated: time.Now(),
+						},
+					},
+				},
+			},
+			want: TrackEventResponse{
+				Success: "all",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := &Client{
+				BaseURL:    tt.fields.BaseURL,
+				apiKey:     tt.fields.apiKey,
+				HTTPClient: tt.fields.HTTPClient,
+				debug:      tt.fields.debug,
+			}
+			got, err := client.TrackEvent(tt.args.params)
 			assert.Nil(t, err)
 			assert.NotNil(t, got)
 			assert.Equal(t, tt.want, got)

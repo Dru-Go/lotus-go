@@ -1,6 +1,7 @@
 package lotusgo
 
 const (
+	PING                        = "/api/ping/"
 	GET_CUSTOMERS               = "/app/customers/"
 	CREATE_CUSTOMERS            = "/app/customers/"
 	CREATE_BATCH_CUSTOMERS      = "/api/batch_create_customers/"

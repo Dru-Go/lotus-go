@@ -43,6 +43,25 @@ func NewClientWithTimeOut(apiKey string, timeOut time.Duration) *Client {
 	}
 }
 
+func (client *Client) Ping() (PingResponse, error) {
+	endpoint := BaseURL_V1 + PING
+	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: ""}
+	request.Header.Add("X-API-KEY", client.apiKey)
+
+	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
+	if err != nil {
+		return PingResponse{}, err
+	}
+
+	var response PingResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return PingResponse{}, err
+	}
+
+	return response, nil
+}
+
 func (client *Client) ListCustomers() ([]CustomerResponse, error) {
 	endpoint := BaseURL_V1 + GET_CUSTOMERS
 	request := lib.Request{Method: "GET", URL: endpoint, Header: http.Header{}, Payload: ""}
@@ -81,9 +100,9 @@ func (client *Client) GetCustomer(message CustomerDetailsParams) (CustomerRespon
 	return response, nil
 }
 
-func (client *Client) CreateCustomer(message CreateCustomerParams) (CustomerResponse, error) {
+func (client *Client) CreateCustomer(params CreateCustomerParams) (CustomerResponse, error) {
 	endpoint := fmt.Sprint(BaseURL_V1, CREATE_CUSTOMERS)
-	formatted, err := query.Values(message)
+	formatted, err := query.Values(params)
 	if err != nil {
 		return CustomerResponse{}, err
 	}
@@ -99,6 +118,32 @@ func (client *Client) CreateCustomer(message CreateCustomerParams) (CustomerResp
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return CustomerResponse{}, err
+	}
+
+	return response, nil
+}
+
+func (client *Client) TrackEvent(params TrackEventParams) (TrackEventResponse, error) {
+	endpoint := fmt.Sprint(BaseURL_V1, TRACK_EVENT)
+	// JSON stringify
+	val, err := json.Marshal(params)
+	if err != nil {
+		return TrackEventResponse{}, err
+	}
+	// fmt.Printf("%+v\n", string(val))
+
+	request := lib.Request{Method: "POST", URL: endpoint, Header: http.Header{}, Payload: string(val)}
+	request.Header.Add("X-API-KEY", client.apiKey)
+	request.Header.Add("Content-Type", "application/json")
+
+	body, err := lib.SendHTTPRequest(*client.HTTPClient, request)
+	if err != nil {
+		return TrackEventResponse{}, err
+	}
+	var response TrackEventResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return TrackEventResponse{}, err
 	}
 
 	return response, nil

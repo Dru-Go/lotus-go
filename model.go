@@ -32,9 +32,26 @@ type CreateCustomerParams struct {
 	DefaultCurrencyCode string `json:"default_currency_code,omitempty" url:"default_currency_code,omitempty"`
 }
 
+type BehaviorOnExisting string
+
+const (
+	Merge     BehaviorOnExisting = "merge"
+	Ignore    BehaviorOnExisting = "ignore"
+	Overwrite BehaviorOnExisting = "overwrite"
+)
+
 type CreateBatchCustomerParams struct {
 	Customers          []CreateCustomerParams `json:"customers,omitempty"`
-	BehaviorOnExisting string                 `json:"behaviorOnExisting,omitempty"` // "merge" | "ignore" | "overwrite"
+	BehaviorOnExisting BehaviorOnExisting     `json:"behaviorOnExisting,omitempty"` // "merge" | "ignore" | "overwrite"
+}
+
+type PingResponse struct {
+	OrganizationId string `json:"organization_id,omitempty"`
+}
+
+type BatchCustomerResponse struct {
+	Success         string     `json:"success,omitempty" `
+	FailedCustomers []Customer `json:"failed_customers,omitempty" `
 }
 
 type CustomerDetailsParams struct {
@@ -159,15 +176,25 @@ type CancelSubscriptionParams struct {
 // EVENT
 
 type TrackEventEntity struct {
-	EventName   string    `json:"eventName,omitempty"`
-	CustomerId  string    `json:"customerId,omitempty"`
-	ImpotencyId string    `json:"idempotencyId,omitempty"`
-	TimeCreated time.Time `json:"timeCreated,omitempty"`
-	Properties  any       `json:"properties,omitempty"`
+	EventName   string             `json:"event_name" url:"event_name"`
+	CustomerId  string             `json:"customer_id" url:"customer_id"`
+	ImpotencyId string             `json:"idempotency_id" url:"idempotency_id"`
+	TimeCreated time.Time          `json:"time_created" url:"time_created"`
+	Properties  TrackEventProperty `json:"properties,omitempty" url:"properties"`
 }
 
-type TrackEvent struct {
-	Batch []TrackEventEntity `json:"batch,omitempty"`
+type TrackEventProperty struct {
+	ShardId   string `json:"shard_id,omitempty" url:"shard_id"`
+	ShardType string `json:"shard_type,omitempty" url:"shard_type"`
+	Change    int32  `json:"change,omitempty" url:"change"`
+}
+
+type TrackEventParams struct {
+	Batch []TrackEventEntity `json:"batch,omitempty" url:"batch"`
+}
+
+type TrackEventResponse struct {
+	Success string `json:"success,omitempty"`
 }
 
 // PLAN
